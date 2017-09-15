@@ -38,15 +38,21 @@ enum
    GCCONTROLLER_PLAYER_INDEX_UNSET = -1,
 };
 
+
 static bool apple_gamecontroller_available(void)
 {
+#if defined(TVOS)
+    return true;
+#else
    int major, minor;
+
    get_ios_version(&major, &minor);
 
    if (major <= 6)
       return false;
 
    return true;
+#endif
 }
 
 static void apple_gamecontroller_joypad_poll_internal(GCController *controller)

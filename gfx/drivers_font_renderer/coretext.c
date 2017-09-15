@@ -24,7 +24,7 @@
 #include "../../config.h"
 #endif
 
-#ifdef IOS
+#if defined(IOS) || defined(TVOS)
 #include <CoreText/CoreText.h>
 #include <CoreGraphics/CoreGraphics.h>
 #else

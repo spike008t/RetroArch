@@ -90,6 +90,11 @@ PERFORMANCE
 /*============================================================
 COMPATIBILITY
 ============================================================ */
+
+#if TARGET_OS_TV
+#define HAVE_GETOPT_LONG 1
+#endif
+
 #ifndef HAVE_GETOPT_LONG
 #include "../compat/compat_getopt.c"
 #endif

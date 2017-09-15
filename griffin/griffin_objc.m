@@ -13,6 +13,8 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boolean.h>
+
 #ifdef IOS
 #include <Availability.h>
 #else

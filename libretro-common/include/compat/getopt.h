@@ -31,10 +31,14 @@
  * Not designed to be fully compatible, but compatible with 
  * the features RetroArch uses. */
 
+#if TARGET_OS_TV
+#define HAVE_GETOPT_LONG 1
+#endif
+
 #ifdef HAVE_GETOPT_LONG
 #include <getopt.h>
 #else
-/* Avoid possible naming collisions during link since we 
+/* Avoid possible naming collisions during link since we
  * prefer to use the actual name. */
 #define getopt_long(argc, argv, optstring, longopts, longindex) __getopt_long_retro(argc, argv, optstring, longopts, longindex)
 

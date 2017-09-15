@@ -339,7 +339,11 @@ static void frontend_darwin_get_environment_settings(int *argc, char *argv[],
    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SHADER],
          home_dir_buf, "shaders_glsl",
          sizeof(g_defaults.dirs[DEFAULT_DIR_SHADER]));
-#if TARGET_OS_IPHONE
+
+#if TARGET_OS_TV
+    fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_CORE],
+                       bundle_path_buf, "modules", sizeof(g_defaults.dirs[DEFAULT_DIR_CORE]));
+#elif TARGET_OS_IPHONE
     int major, minor;
     get_ios_version(&major, &minor);
     if (major >= 10 )
@@ -399,7 +403,24 @@ static void frontend_darwin_get_environment_settings(int *argc, char *argv[],
 #endif
 #endif
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_TV
+    char assets_zip_path[PATH_MAX_LENGTH];
+    strlcpy(g_defaults.path.buildbot_server_url, "http://buildbot.libretro.com/nightly/apple/ios9/latest/", sizeof(g_defaults.path.buildbot_server_url));
+
+    fill_pathname_join(assets_zip_path, bundle_path_buf, "assets.zip", sizeof(assets_zip_path));
+
+    if (path_file_exists(assets_zip_path))
+    {
+        settings_t *settings = config_get_ptr();
+
+        RARCH_LOG("Assets ZIP found at [%s], setting up bundle assets extraction...\n", assets_zip_path);
+        RARCH_LOG("Extraction dir will be: %s\n", home_dir_buf);
+        strlcpy(settings->arrays.bundle_assets_src, assets_zip_path, sizeof(settings->arrays.bundle_assets_src));
+        strlcpy(settings->arrays.bundle_assets_dst, home_dir_buf, sizeof(settings->arrays.bundle_assets_dst));
+        settings->uints.bundle_assets_extract_version_current = 130; /* TODO/FIXME: Just hardcode this for now */
+    }
+
+#elif TARGET_OS_IPHONE
     char assets_zip_path[PATH_MAX_LENGTH];
     if (major > 8)
        strlcpy(g_defaults.path.buildbot_server_url, "http://buildbot.libretro.com/nightly/apple/ios9/latest/", sizeof(g_defaults.path.buildbot_server_url));
@@ -513,7 +534,9 @@ static int frontend_darwin_get_rating(void)
 static enum frontend_powerstate frontend_darwin_get_powerstate(int *seconds, int *percent)
 {
    enum frontend_powerstate ret = FRONTEND_POWERSTATE_NONE;
-#if defined(OSX)
+#if TARGET_OS_TV
+    ret = FRONTEND_POWERSTATE_ON_POWER_SOURCE;
+#elif defined(OSX)
    CFIndex i, total;
    CFArrayRef list;
    bool have_ac, have_battery, charging;

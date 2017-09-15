@@ -122,7 +122,9 @@ static OSStatus audio_write_cb(void *userdata,
    return noErr;
 }
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_TV
+// @TODO: ?
+#elif TARGET_OS_IPHONE
 static void coreaudio_interrupt_listener(void *data, UInt32 interrupt_state)
 {
     (void)data;
@@ -219,7 +221,8 @@ static void *coreaudio_init(const char *device,
    dev->lock = slock_new();
    dev->cond = scond_new();
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_TV
+#elif TARGET_OS_IPHONE
    if (!session_initialized)
    {
       session_initialized = true;
